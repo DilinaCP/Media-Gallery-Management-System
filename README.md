@@ -1,1 +1,1 @@
-# Media-Gallery-Management-System-
+# Media-Gallery-Management-System
