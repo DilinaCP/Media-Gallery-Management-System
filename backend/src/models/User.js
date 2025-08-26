@@ -6,6 +6,6 @@ const userSchema = new mongoose.Schema({
   password: { type: String },
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   isActive: { type: Boolean, default: true }
-}, { timestamps: true });
+}, { timestamps: true },{ collection: 'media_gallery' });
 
 module.exports = mongoose.model('User', userSchema);

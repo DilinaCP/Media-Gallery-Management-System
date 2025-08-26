@@ -8,7 +8,7 @@ import axios from 'axios';
 export default function RegisterPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -22,9 +22,9 @@ export default function RegisterPage() {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      const { fullName, email, password, confirmPassword } = formData;
+      const { name, email, password, confirmPassword } = formData;
 
-      if (!fullName || !email || !password || !confirmPassword) {
+      if (!name || !email || !password || !confirmPassword) {
         toast.error('Please fill in all fields');
         return;
       }
@@ -33,12 +33,22 @@ export default function RegisterPage() {
         toast.error('Passwords do not match');
         return;
       }
+      if (password.length < 10) {
+      toast.error('Password must be at least 10 characters');
+      return;
+    }
       // Registration logic here
-      toast.success('Registration successful!');
-      router.push("/auth/otp");
-      // router.push('/somewhere');
+      try {
+        const {name, email, password} = formData;
+        await axios.post('http://localhost:8080/api/auth/register', {name, email, password});
+        toast.success('Registerd Successful!');
+        router.push('/pages/dashboard/');
+      } catch (error) {
+        console.log(error);
+        toast.error('Signup failed');
+      }
     },
-    [formData]
+    [formData, router]
   );
 
   return (
@@ -51,8 +61,8 @@ export default function RegisterPage() {
           <input
             className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 border-2"
             type="text"
-            name="fullName"
-            value={formData.fullName}
+            name="name"
+            value={formData.name}
             onChange={handleChange}
             placeholder="Full Name"
           />
