@@ -1,10 +1,22 @@
 'use client'
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 
+
+type FileMeta = {
+  file: File;
+  preview: string;
+  title: string;
+  description: string;
+  tags: string;
+};
+
+
 export default function DashboardPage() {
-  const [files, setFiles] = useState([]);
+     const router = useRouter();
+  const [files, setFiles] = useState<FileMeta[]>([]);
 
   const { getRootProps, getInputProps, open } = useDropzone({
     accept: { "image/*": [".jpeg", ".jpg", ".png"] },
@@ -30,7 +42,7 @@ export default function DashboardPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    router.push('/pages/gallery')
     const formData = new FormData();
 
     files.forEach((f, i) => {
@@ -40,11 +52,7 @@ export default function DashboardPage() {
       formData.append(`tags_${i}`, f.tags);
     });
 
-    // Example: send to Next.js API route
-    fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
+   
   };
 
   return (
@@ -103,23 +111,14 @@ export default function DashboardPage() {
         </div>
 
         <button
+          onClick={handleSubmit}
           type="submit"
-          className="mt-6 bg-green-500 text-white px-6 py-2 rounded"
+          className="w-full px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-800"
         >
           Submit All
         </button>
       </form>
-      <div className="grid grid-cols-3 gap-4 mt-6">
-        {files.map((f, i) => (
-          <div key={i} className="border p-2">
-            <img
-              src={f.preview}
-              alt="preview"
-              className="w-full h-40 object-cover"
-            />
-          </div>
-        ))}
-      </div>
+
     </div>
   );
 }
