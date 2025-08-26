@@ -2,29 +2,43 @@
 
 import { useState , useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { toast } from 'sonner';
+
 
 export default function LoginPage() {
     const router = useRouter();
-    const [email, setEmail ] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [formData, setFormData] = useState({
+      email:'',
+      password:''
+    });
     
+     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+          ...formData,
+          [e.target.name]: e.target.value
+        });
+      };
+
     const handleSubmit = async (e: React.FormEvent) => { 
         e.preventDefault();
-        setError(''); 
+        const { email, password } = formData;
         
         // Basic validation
-        if (!email || !password) {
-          setError('Please enter both username and password.');
+        if (!formData.email || !formData.password) {
+            toast.error('Please fill in all fields');
           return;
         }
-        // Simulate successful login
-        if (email === 'user@gmail.com' && password === '1234') {
-          router.push('/pages/dashboard');
-        } else {
-          setError('Invalid username or password.');
-        }
-      };
+
+      try {
+        const res = await axios.post('http://localhost:8080/api/auth/login', {email, password});
+        const data = res.data as { token: string; user: { email: string; name: string } };
+        toast.success('Login successful!');
+        router.push('/pages/dashboard');
+      } catch (error) {
+        console.error(error)
+        toast.error("Invalid email or password");
+      }
 
     return (
         <div className='flex items-center justify-center min-h-screen'>
@@ -37,7 +51,7 @@ export default function LoginPage() {
                         className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 border-2"
                         type="email"
                         value={email}
-                        onChange={e => setEmail(e.target.value)}
+                        onChange={handleChange}
                         placeholder="Email"
                         />
 
@@ -45,19 +59,17 @@ export default function LoginPage() {
                         className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 border-2"
                         type="password"
                         value={password}
-                        onChange={e => setPassword(e.target.value)}
+                        onChange={handleChange}
                         placeholder="Password"
                         />
-
                         
                         <button 
                         className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         type="submit">Login
                         </button>
-
-                        {error && <div style={{ color: 'red' }}>{error}</div>}
                     </form>
                 </div>
             </div>
         );
     }
+}

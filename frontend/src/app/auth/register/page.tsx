@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import axios from 'axios';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -85,6 +86,16 @@ export default function RegisterPage() {
           >
             Register
           </button>
+          <div>
+            <div>
+              <h1>Already have an account</h1>
+            </div>
+            <div>
+              <button>
+                Login
+              </button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
